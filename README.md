@@ -1,8 +1,7 @@
 # aicommit
 
 [![NPM Version](https://img.shields.io/npm/v/aicommit)](https://www.npmjs.com/package/aicommit)
-[![License](https://img.shields.io/npm/l/aicommit)](https://github.com/yourusername/aicommit/blob/main/LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/yourusername/aicommit/ci.yml)](https://github.com/yourusername/aicommit/actions)
+[![License](https://img.shields.io/npm/l/aicommit)](https://github.com/Fede91/aicommit/blob/main/LICENSE)
 
 `aicommit` is a tool that generates git commit messages using OpenAI's GPT models. It supports multiple profiles, enabling different configurations for API keys, models, and system messages.
 
