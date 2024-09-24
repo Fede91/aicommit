@@ -1,0 +1,17 @@
+{
+  "name": "aicommit",
+  "version": "0.0.1",
+  "description": "A tool that generates git commit messages using AI models",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "ai",
+    "commit",
+    "message",
+    "git",
+    "push",
+    "autocommit"
+  ],
+  "author": "Fede91 (http://federicobagato.it/)",
+  "license": "MIT"
+}
