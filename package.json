@@ -1,6 +1,6 @@
 {
   "name": "@fede91/aicommit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A tool that generates git commit messages using AI models",
   "main": "index.js",
   "bin": {
