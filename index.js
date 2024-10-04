@@ -24,6 +24,7 @@ function readConfig() {
     profiles: [],
     activeProfile: null,
     reviewEnabled: true, // Default to enabled
+    verbose: false, // Default to disabled
   };
 }
 
@@ -122,6 +123,7 @@ program
   .option("--enable-review", "Enable commit message review")
   .option("--disable-review", "Disable commit message review")
   .option("--verbose", "Enable verbose output for git operations")
+  .option("--set-verbose <value>", "Set verbose mode (1 for on, 0 for off)")
   .parse(process.argv);
 
 const options = program.opts();
@@ -197,6 +199,14 @@ if (options.disableReview) {
   config.reviewEnabled = false;
   writeConfig(config);
   console.log("Commit message review disabled.");
+  process.exit(0);
+}
+
+if (options.setVerbose !== undefined) {
+  const verboseValue = options.setVerbose === "1";
+  config.verbose = verboseValue;
+  writeConfig(config);
+  console.log(`Verbose mode ${verboseValue ? "enabled" : "disabled"}.`);
   process.exit(0);
 }
 
@@ -296,21 +306,14 @@ async function getCommitMessage(diff, branchName) {
 
 async function main() {
   try {
-    const options = program.opts();
-    const verbose = options.verbose;
+    const verbose = config.verbose;
 
     // Step: Print model used
     console.log(`🔧 Using OpenAI model: ${OPENAI_MODEL}`);
 
     // Step: Add all files to the staging area
     console.log("📂 Staging all changes...");
-    if (verbose) {
-      const { stdout, stderr } = await exec("git add .");
-      console.log(stdout);
-      if (stderr) console.error(stderr);
-    } else {
-      await git.add(".");
-    }
+    await git.add(".");
 
     // Step: Get the current Git status
     const status = await git.status();

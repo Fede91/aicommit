@@ -81,6 +81,20 @@ aicommit --enable-review
 aicommit --disable-review
 ```
 
+#### Set Verbose Mode
+
+To enable verbose mode:
+
+```sh
+aicommit --set-verbose 1
+```
+
+To disable verbose mode:
+
+```sh
+aicommit --set-verbose 0
+```
+
 ### Printing Profile Information
 
 #### Print Current OpenAI API Key
@@ -107,14 +121,6 @@ Simply run the command without any options to stage, generate a commit message, 
 
 ```sh
 aicommit
-```
-
-### Verbose Mode
-
-To see more detailed git log messages during the commit process, use the verbose flag:
-
-```sh
-aicommit --verbose
 ```
 
 ## Example Workflow
