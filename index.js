@@ -233,6 +233,8 @@ Instructions:
      - Header: A short summary of the changes (max 50 characters). Do not end with a period and not include the branch name.
      - Body (optional): A more detailed explanation if necessary (wrap at 72 characters).
      - Footer (optional): Any references to issues closed or other important notes. Leave empty if no issues are associated with the branch.
+   - Avoid using special characters like [example] or [/example] in the commit message, as it may interfere with the commit message parsing.
+   - Avoid using apostrophes (' and " and \`) in the commit message, as it may interfere with the commit message parsing.
 
 Output:
 Provide a well-structured commit message based on the identified and classified changes. Ensure the message is clear, concise, and adheres to the repository's contribution guidelines.
