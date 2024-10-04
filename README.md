@@ -18,7 +18,7 @@
 To install `aicommit`, use npm:
 
 ```sh
-npm install -g aicommit
+npm i -g @fede91/aicommit
 ```
 
 ## Usage
