@@ -95,6 +95,32 @@ To disable verbose mode:
 aicommit --set-verbose 0
 ```
 
+### Configuring LLM Model
+
+#### Set API Request Timeout
+
+Set the timeout for API requests in milliseconds:
+
+```sh
+aicommit --set-timeout 30000
+```
+
+#### Set Maximum Tokens
+
+Set the maximum number of tokens for the LLM response:
+
+```sh
+aicommit --set-max-tokens 200
+```
+
+#### Set Temperature
+
+Set the temperature for the LLM model (between 0.0 and 1.0):
+
+```sh
+aicommit --set-temperature 0.8
+```
+
 ### Printing Profile Information
 
 #### Print Current OpenAI API Key

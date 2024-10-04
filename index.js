@@ -23,8 +23,11 @@ function readConfig() {
   return {
     profiles: [],
     activeProfile: null,
-    reviewEnabled: true, // Default to enabled
-    verbose: false, // Default to disabled
+    reviewEnabled: true,
+    verbose: false,
+    timeout: 60000, // Default timeout: 60 seconds
+    maxTokens: 150, // Default max tokens
+    temperature: 0.7, // Default temperature
   };
 }
 
@@ -124,6 +127,15 @@ program
   .option("--disable-review", "Disable commit message review")
   .option("--verbose", "Enable verbose output for git operations")
   .option("--set-verbose <value>", "Set verbose mode (1 for on, 0 for off)")
+  .option("--set-timeout <value>", "Set API request timeout in milliseconds")
+  .option(
+    "--set-max-tokens <value>",
+    "Set maximum number of tokens for the response"
+  )
+  .option(
+    "--set-temperature <value>",
+    "Set temperature for the LLM model (0.0 to 1.0)"
+  )
   .parse(process.argv);
 
 const options = program.opts();
@@ -210,6 +222,46 @@ if (options.setVerbose !== undefined) {
   process.exit(0);
 }
 
+if (options.setTimeout) {
+  const timeout = parseInt(options.setTimeout);
+  if (!isNaN(timeout) && timeout > 0) {
+    config.timeout = timeout;
+    writeConfig(config);
+    console.log(`API request timeout set to ${timeout} milliseconds.`);
+  } else {
+    console.error("Invalid timeout value. Please provide a positive integer.");
+  }
+  process.exit(0);
+}
+
+if (options.setMaxTokens) {
+  const maxTokens = parseInt(options.setMaxTokens);
+  if (!isNaN(maxTokens) && maxTokens > 0) {
+    config.maxTokens = maxTokens;
+    writeConfig(config);
+    console.log(`Maximum tokens set to ${maxTokens}.`);
+  } else {
+    console.error(
+      "Invalid max tokens value. Please provide a positive integer."
+    );
+  }
+  process.exit(0);
+}
+
+if (options.setTemperature) {
+  const temperature = parseFloat(options.setTemperature);
+  if (!isNaN(temperature) && temperature >= 0 && temperature <= 1) {
+    config.temperature = temperature;
+    writeConfig(config);
+    console.log(`Temperature set to ${temperature}.`);
+  } else {
+    console.error(
+      "Invalid temperature value. Please provide a number between 0 and 1."
+    );
+  }
+  process.exit(0);
+}
+
 if (!activeProfile) {
   console.error(
     "Error: No active profile set. Add a profile using --add-profile <name>."
@@ -293,13 +345,15 @@ async function getCommitMessage(diff, branchName) {
         { role: "system", content: SYSTEM_MESSAGE },
         { role: "user", content: prompt },
       ],
-      max_tokens: 150,
+      max_tokens: config.maxTokens,
+      temperature: config.temperature,
     },
     {
       headers: {
         Authorization: `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
+      timeout: config.timeout,
     }
   );
 
