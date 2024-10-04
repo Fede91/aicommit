@@ -11,6 +11,7 @@
 - **Multiple Profiles**: Manage multiple profiles, each with its own API key, model, and system message.
 - **Interactive Message Review**: Option to review and refine the commit message before committing.
 - **Profile Management**: Commands to add, list, and switch profiles.
+- **Git Log Output**: Print git log messages during staging, committing, and pushing actions.
 
 ## Installation
 
@@ -80,6 +81,20 @@ aicommit --enable-review
 aicommit --disable-review
 ```
 
+#### Set Verbose Mode
+
+To enable verbose mode:
+
+```sh
+aicommit --set-verbose 1
+```
+
+To disable verbose mode:
+
+```sh
+aicommit --set-verbose 0
+```
+
 ### Printing Profile Information
 
 #### Print Current OpenAI API Key
@@ -102,7 +117,7 @@ aicommit --print-system-message
 
 ### Committing Changes
 
-Simply run the command without any options to stage, generate a commit message, review (if enabled), commit, and push the changes.
+Simply run the command without any options to stage, generate a commit message, review (if enabled), commit, and push the changes. Git log messages will be printed to the console during these actions.
 
 ```sh
 aicommit
@@ -140,10 +155,10 @@ aicommit
    aicommit --enable-review
    ```
 
-6. **Generate and Commit Changes**:
+6. **Generate and Commit Changes with Verbose Output**:
 
    ```sh
-   aicommit
+   aicommit --verbose
    ```
 
 ## Contributing
