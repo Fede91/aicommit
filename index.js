@@ -7,6 +7,8 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 const prompts = require("@inquirer/prompts");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 
 const git = simpleGit();
 const configDir = path.join(os.homedir(), ".git-commit-helper");
@@ -119,6 +121,7 @@ program
   .option("--switch-profile", "Switch profile interactively")
   .option("--enable-review", "Enable commit message review")
   .option("--disable-review", "Disable commit message review")
+  .option("--verbose", "Enable verbose output for git operations")
   .parse(process.argv);
 
 const options = program.opts();
@@ -293,12 +296,21 @@ async function getCommitMessage(diff, branchName) {
 
 async function main() {
   try {
+    const options = program.opts();
+    const verbose = options.verbose;
+
     // Step: Print model used
     console.log(`🔧 Using OpenAI model: ${OPENAI_MODEL}`);
 
     // Step: Add all files to the staging area
     console.log("📂 Staging all changes...");
-    await git.add(".");
+    if (verbose) {
+      const { stdout, stderr } = await exec("git add .");
+      console.log(stdout);
+      if (stderr) console.error(stderr);
+    } else {
+      await git.add(".");
+    }
 
     // Step: Get the current Git status
     const status = await git.status();
@@ -335,14 +347,28 @@ async function main() {
 
     // Step: Commit the changes with the generated message
     console.log("📦 Committing changes...");
-    await git.commit(commitMessage);
+    if (verbose) {
+      const { stdout, stderr } = await exec(
+        `git commit -m "${commitMessage.replace(/"/g, '\\"')}"`
+      );
+      console.log(stdout);
+      if (stderr) console.error(stderr);
+    } else {
+      await git.commit(commitMessage);
+    }
 
     // Step: Print which profile was used
     console.log(`👤 Using profile: ${activeProfile.name}`);
 
     // Step: Push the changes to the remote repository
     console.log("🚀 Pushing changes...");
-    await git.push("origin", branchName);
+    if (verbose) {
+      const { stdout, stderr } = await exec(`git push origin ${branchName}`);
+      console.log(stdout);
+      if (stderr) console.error(stderr);
+    } else {
+      await git.push("origin", branchName);
+    }
 
     // Step: Final step
     console.log("✅ Changes committed and pushed successfully!");

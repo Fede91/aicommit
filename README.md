@@ -11,6 +11,7 @@
 - **Multiple Profiles**: Manage multiple profiles, each with its own API key, model, and system message.
 - **Interactive Message Review**: Option to review and refine the commit message before committing.
 - **Profile Management**: Commands to add, list, and switch profiles.
+- **Git Log Output**: Print git log messages during staging, committing, and pushing actions.
 
 ## Installation
 
@@ -102,10 +103,18 @@ aicommit --print-system-message
 
 ### Committing Changes
 
-Simply run the command without any options to stage, generate a commit message, review (if enabled), commit, and push the changes.
+Simply run the command without any options to stage, generate a commit message, review (if enabled), commit, and push the changes. Git log messages will be printed to the console during these actions.
 
 ```sh
 aicommit
+```
+
+### Verbose Mode
+
+To see more detailed git log messages during the commit process, use the verbose flag:
+
+```sh
+aicommit --verbose
 ```
 
 ## Example Workflow
@@ -140,10 +149,10 @@ aicommit
    aicommit --enable-review
    ```
 
-6. **Generate and Commit Changes**:
+6. **Generate and Commit Changes with Verbose Output**:
 
    ```sh
-   aicommit
+   aicommit --verbose
    ```
 
 ## Contributing
