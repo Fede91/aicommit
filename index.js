@@ -386,6 +386,12 @@ async function main() {
     // Step: Get the current Git status
     const status = await git.status();
 
+    // Check if there are any files in the staging area
+    if (status.staged.length === 0) {
+      console.log("No changes to commit. Exiting.");
+      process.exit(0);
+    }
+
     // Step: Get the current changes
     const diff = await git.diff(["--cached"]);
 
