@@ -28,6 +28,7 @@ function readConfig() {
     timeout: 60000, // Default timeout: 60 seconds
     maxTokens: 150, // Default max tokens
     temperature: 0.7, // Default temperature
+    autoPush: true, // Default to enabled
   };
 }
 
@@ -136,6 +137,8 @@ program
     "--set-temperature <value>",
     "Set temperature for the LLM model (0.0 to 1.0)"
   )
+  .option("--set-auto-push <value>", "Set auto push (1 for on, 0 for off)")
+  .option("--np", "Disable auto-push for this session only")
   .parse(process.argv);
 
 const options = program.opts();
@@ -262,6 +265,14 @@ if (options.setTemperature) {
   process.exit(0);
 }
 
+if (options.setAutoPush !== undefined) {
+  const autoPushValue = options.setAutoPush === "1";
+  config.autoPush = autoPushValue;
+  writeConfig(config);
+  console.log(`Auto push ${autoPushValue ? "enabled" : "disabled"}.`);
+  process.exit(0);
+}
+
 if (!activeProfile) {
   console.error(
     "Error: No active profile set. Add a profile using --add-profile <name>."
@@ -363,6 +374,7 @@ async function getCommitMessage(diff, branchName) {
 async function main() {
   try {
     const verbose = config.verbose;
+    const noPush = program.opts().np; // Get the --no-push option
 
     // Step: Print model used
     console.log(`🔧 Using OpenAI model: ${OPENAI_MODEL}`);
@@ -387,20 +399,38 @@ async function main() {
     // Step: Print the generated commit message
     console.log(`📝 Commit message generated:\n${commitMessage}`);
 
-    // Step: Ask the user if they want to refine the commit message
+    // Step: Ask the user if they want to refine or regenerate the commit message
     if (config.reviewEnabled) {
-      const refine = await prompts.confirm({
-        message: "Would you like to refine the commit message?",
-        default: false,
-      });
-
-      if (refine) {
-        const newMessage = await prompts.input({
-          message: "Enter the new commit message:",
-          initial: commitMessage,
-          required: true,
+      let continueReview = true;
+      while (continueReview) {
+        const action = await prompts.select({
+          message: "What would you like to do with this commit message?",
+          choices: [
+            { name: "Use as is", value: "use" },
+            { name: "Refine", value: "refine" },
+            { name: "Generate another", value: "regenerate" },
+          ],
         });
-        commitMessage = newMessage;
+
+        switch (action) {
+          case "use":
+            continueReview = false;
+            break;
+          case "refine":
+            const newMessage = await prompts.input({
+              message: "Enter the refined commit message:",
+              initial: commitMessage,
+              required: true,
+            });
+            commitMessage = newMessage;
+            continueReview = false;
+            break;
+          case "regenerate":
+            console.log("🔄 Regenerating commit message...");
+            commitMessage = await getCommitMessage(diff, branchName);
+            console.log(`📝 New commit message generated:\n${commitMessage}`);
+            break;
+        }
       }
     }
 
@@ -419,18 +449,20 @@ async function main() {
     // Step: Print which profile was used
     console.log(`👤 Using profile: ${activeProfile.name}`);
 
-    // Step: Push the changes to the remote repository
-    console.log("🚀 Pushing changes...");
-    if (verbose) {
-      const { stdout, stderr } = await exec(`git push origin ${branchName}`);
-      console.log(stdout);
-      if (stderr) console.error(stderr);
+    // Step: Push the changes to the remote repository if autoPush is enabled and --no-push is not set
+    if (config.autoPush && !noPush) {
+      console.log("🚀 Pushing changes...");
+      if (verbose) {
+        const { stdout, stderr } = await exec(`git push origin ${branchName}`);
+        console.log(stdout);
+        if (stderr) console.error(stderr);
+      } else {
+        await git.push("origin", branchName);
+      }
+      console.log("✅ Changes committed and pushed successfully!");
     } else {
-      await git.push("origin", branchName);
+      console.log("✅ Changes committed successfully! (Push skipped)");
     }
-
-    // Step: Final step
-    console.log("✅ Changes committed and pushed successfully!");
   } catch (error) {
     console.error("❌ Error:", error);
   }

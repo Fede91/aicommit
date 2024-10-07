@@ -141,13 +141,53 @@ aicommit --print-model
 aicommit --print-system-message
 ```
 
+### Configuring Behavior
+
+#### Set Auto Push
+
+To enable automatic push after commit:
+
+```sh
+aicommit --set-auto-push 1
+```
+
+To disable automatic push after commit:
+
+```sh
+aicommit --set-auto-push 0
+```
+
+#### Disable Push for Current Session
+
+To disable pushing for the current session only (without changing the global auto-push setting):
+
+```sh
+aicommit --np
+```
+
+This option is useful when you want to commit changes but delay pushing them, regardless of your auto-push configuration.
+
 ### Committing Changes
 
-Simply run the command without any options to stage, generate a commit message, review (if enabled), commit, and push the changes. Git log messages will be printed to the console during these actions.
+Simply run the command without any options to stage, generate a commit message, review (if enabled), commit, and push the changes (if auto-push is enabled). Git log messages will be printed to the console during these actions.
 
 ```sh
 aicommit
 ```
+
+To commit changes without pushing (overriding the auto-push setting for this session only):
+
+```sh
+aicommit --no-push
+```
+
+When review is enabled, you will be presented with three options:
+
+1. Use the generated commit message as is
+2. Refine the commit message
+3. Generate a new commit message
+
+You can continue to refine or regenerate the message until you're satisfied with the result.
 
 ## Example Workflow
 
