@@ -42,6 +42,9 @@ async function main() {
     const verbose = config.verbose;
     const noPush = options.np;
 
+    // Step: Print which profile was used
+    console.log(`👤 Using profile: ${activeProfile.name}`);
+
     // Step: Print model used
     console.log(`🔧 Using OpenAI model: ${OPENAI_MODEL}`);
 
@@ -118,9 +121,6 @@ async function main() {
     // Step: Commit the changes with the generated message
     console.log("📦 Committing changes...");
     await commitChanges(commitMessage, verbose);
-
-    // Step: Print which profile was used
-    console.log(`👤 Using profile: ${activeProfile.name}`);
 
     // Step: Push the changes to the remote repository if autoPush is enabled and --no-push is not set
     if (config.autoPush && !noPush) {
